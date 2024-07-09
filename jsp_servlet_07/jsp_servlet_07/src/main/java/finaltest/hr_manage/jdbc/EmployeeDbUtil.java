@@ -1,20 +1,22 @@
-package phuong.restaurant.jdbc;
+package finaltest.hr_manage.jdbc;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
 
 import javax.sql.DataSource;
-public class FoodDbUtil {
+
+public class EmployeeDbUtil {
     private DataSource dataSource;
 
-    public FoodDbUtil(DataSource theDataSource) {
+    public EmployeeDbUtil(DataSource theDataSource) {
         dataSource = theDataSource;
     }
 
-    public List<Food> getFoods() throws Exception {
+    public List<Employee> getEmps() throws Exception {
 
-        List<Food> foods = new ArrayList<>();
+        List<Employee> emps = new ArrayList<>();
 
         Connection myConn = null;
         Statement myStmt = null;
@@ -22,16 +24,16 @@ public class FoodDbUtil {
 
         try {
             // get a connection
-            String url = "jdbc:mysql://localhost:3306/restaurant";
+            String url = "jdbc:mysql://localhost:3306/hr_manage";
             String username = "root";
             String password = "";
             Class.forName("com.mysql.jdbc.Driver");
 
             myConn = DriverManager.getConnection(url,username,password);
-//			myConn = dataSource.getConnection();
+//          myConn = dataSource.getConnection();
 
             // create sql statement
-            String sql = "select * from food order by id";
+            String sql = "select * from employee order by id";
 
             myStmt = myConn.createStatement();
 
@@ -42,24 +44,22 @@ public class FoodDbUtil {
             while (myRs.next()) {
 
                 // retrieve data from result set row
-                int id = myRs.getInt("id");
-                String name = myRs.getString("name");
-                int categoryId = myRs.getInt("categoryId");
-                String image = myRs.getString("image");
-                String description = myRs.getString("description");
-                int quantity = myRs.getInt("quantity");
-                double price = myRs.getDouble("price");
+                int empId = myRs.getInt("id");
+                String empid = myRs.getString("employee_id");
+                String employee_name = myRs.getString("employee_name");
+                Date birthday = myRs.getDate("birthday");
+                String phone_number = myRs.getString("phone_number");
+                String email = myRs.getString("email");
 
                 // create new student object
-                Food tempFood = new Food(id, name, image, description, quantity, price,categoryId);
+                Employee tempEmp = new Employee(empId, empid, employee_name, birthday, phone_number, email);
 
                 // add it to the list of students
-                foods.add(tempFood);
+                emps.add(tempEmp);
             }
 
-            return foods;
-        }
-        finally {
+            return emps;
+        } finally {
             // close JDBC objects
             close(myConn, myStmt, myRs);
         }
@@ -79,22 +79,21 @@ public class FoodDbUtil {
             if (myConn != null) {
                 myConn.close();   // doesn't really close it ... just puts back in connection pool
             }
-        }
-        catch (Exception exc) {
+        } catch (Exception exc) {
             exc.printStackTrace();
         }
     }
 
-    public void addFood(Food theFood) throws Exception {
+    public void addEmp(Employee theEmp) throws Exception {
 
         Connection myConn = null;
         PreparedStatement myStmt = null;
 
         try {
             // get db connection
-//			myConn = dataSource.getConnection();
+//          myConn = dataSource.getConnection();
             // get a connection
-            String url = "jdbc:mysql://localhost:3306/restaurant";
+            String url = "jdbc:mysql://localhost:3306/hr_manage";
             String username = "root";
             String password = "";
             Class.forName("com.mysql.jdbc.Driver");
@@ -102,46 +101,45 @@ public class FoodDbUtil {
             myConn = DriverManager.getConnection(url,username,password);
 
             // create sql for insert
-            String sql = "insert into food "
-                    + "(categoryId, name, image, description,quantity, price)"
-                    + "values (?, ?, ?, ?, ?, ?)";
+            String sql = "insert into employee "
+                    + "(employee_id, employee_name, birthday, phone_number, email)"
+                    + "values (?, ?, ?, ?, ?)";
 
             myStmt = myConn.prepareStatement(sql);
 
             // set the param values for the student
-            myStmt.setInt(1, theFood.getCategoryId());
-            myStmt.setString(2, theFood.getName());
-            myStmt.setString(3, theFood.getImage());
-            myStmt.setString(4, theFood.getDescription());
-            myStmt.setInt(5, theFood.getQuantity());
-            myStmt.setDouble(6, theFood.getPrice());
+            myStmt.setString(1, theEmp.getEmployee_id());
+            myStmt.setString(2, theEmp.getEmployee_name());
+            // Convert java.util.Date to java.sql.Date
+            myStmt.setDate(3, new java.sql.Date(theEmp.getBirthday().getTime()));
+            myStmt.setString(4, theEmp.getPhone_number());
+            myStmt.setString(5, theEmp.getEmail());
 
             // execute sql insert
             myStmt.execute();
-        }
-        finally {
+        } finally {
             // clean up JDBC objects
             close(myConn, myStmt, null);
         }
     }
 
-    public Food getFood(String theFoodId) throws Exception {
+    public Employee getEmp(String theEmpId) throws Exception {
 
-        Food theFood = null;
+        Employee theEmp = null;
 
         Connection myConn = null;
         PreparedStatement myStmt = null;
         ResultSet myRs = null;
-        int foodId;
+        int empId;
 
         try {
             // convert student id to int
-            foodId = Integer.parseInt(theFoodId);
+            empId = Integer.parseInt(theEmpId);
 
             // get connection to database
-//			myConn = dataSource.getConnection();
+//          myConn = dataSource.getConnection();
             // get a connection
-            String url = "jdbc:mysql://localhost:3306/restaurant";
+            String url = "jdbc:mysql://localhost:3306/hr_manage";
             String username = "root";
             String password = "";
             Class.forName("com.mysql.jdbc.Driver");
@@ -149,49 +147,46 @@ public class FoodDbUtil {
             myConn = DriverManager.getConnection(url,username,password);
 
             // create sql to get selected food
-            String sql = "select * from food where id=?";
+            String sql = "select * from employee where id=?";
 
             // create prepared statement
             myStmt = myConn.prepareStatement(sql);
 
             // set params
-            myStmt.setInt(1, foodId);
+            myStmt.setInt(1, empId);
 
             // execute statement
             myRs = myStmt.executeQuery();
 
             // retrieve data from result set row
             if (myRs.next()) {
-                String name = myRs.getString("name");
-                String image = myRs.getString("image");
-                String description = myRs.getString("description");
-                Integer quantity = myRs.getInt("quantity");
-                Double price = myRs.getDouble("price");
-                Integer categoryId = myRs.getInt("categoryId");
+                String empid = myRs.getString("employee_id");
+                String employee_name = myRs.getString("employee_name");
+                java.util.Date birthday = myRs.getDate("birthday");
+                String phone_number = myRs.getString("phone_number");
+                String email = myRs.getString("email");
 
                 // use the studentId during construction
-                theFood = new Food(foodId, name, image, description, quantity, price, categoryId);
-            }
-            else {
-                throw new Exception("Could not find food id: " + foodId);
+                theEmp = new Employee(empId, empid, employee_name, birthday, phone_number, email);
+            } else {
+                throw new Exception("Could not find employee id: " + empId);
             }
 
-            return theFood;
-        }
-        finally {
+            return theEmp;
+        } finally {
             // clean up JDBC objects
             close(myConn, myStmt, myRs);
         }
     }
 
-    public void updateFood(Food theFood) throws Exception {
+    public void updateEmp(Employee theEmp) throws Exception {
 
         Connection myConn = null;
         PreparedStatement myStmt = null;
 
         try {
             // get db connection
-            String url = "jdbc:mysql://localhost:3306/restaurant";
+            String url = "jdbc:mysql://localhost:3306/hr_manage";
             String username = "root";
             String password = "";
             Class.forName("com.mysql.jdbc.Driver");
@@ -199,21 +194,25 @@ public class FoodDbUtil {
             myConn = DriverManager.getConnection(url, username, password);
 
             // create SQL update statement
-            String sql = "update food "
-                    + "set name=?, image=?, description=?, quantity=?, price=?, categoryId=? "
+            String sql = "update employee "
+                    + "set employee_id=?, employee_name=?, birthday=?, phone_number=?, email=? "
                     + "where id=?";
 
             // prepare statement
             myStmt = myConn.prepareStatement(sql);
 
             // set params
-            myStmt.setString(1, theFood.getName());
-            myStmt.setString(2, theFood.getImage());
-            myStmt.setString(3, theFood.getDescription());
-            myStmt.setInt(4, theFood.getQuantity());
-            myStmt.setDouble(5, theFood.getPrice());
-            myStmt.setInt(6, theFood.getCategoryId()); // set categoryId
-            myStmt.setInt(7, theFood.getId()); // set id for the WHERE clause
+            myStmt.setString(1, theEmp.getEmployee_id());
+            myStmt.setString(2, theEmp.getEmployee_name());
+
+            // Convert java.util.Date to java.sql.Date
+            myStmt.setDate(3, new java.sql.Date(theEmp.getBirthday().getTime()));
+
+            myStmt.setString(4, theEmp.getPhone_number());
+            myStmt.setString(5, theEmp.getEmail());
+            myStmt.setInt(6, theEmp.getId());
+
+
 
             // execute SQL statement
             myStmt.executeUpdate(); // use executeUpdate for update statement
@@ -223,20 +222,19 @@ public class FoodDbUtil {
         }
     }
 
-
-    public void deleteFood(String theFoodId) throws Exception {
+    public void deleteEmp(String theEmpId) throws Exception {
 
         Connection myConn = null;
         PreparedStatement myStmt = null;
 
         try {
             // convert student id to int
-            int foodId = Integer.parseInt(theFoodId);
+            int empId = Integer.parseInt(theEmpId);
 
             // get connection to database
-//			myConn = dataSource.getConnection();
+//          myConn = dataSource.getConnection();
             // get a connection
-            String url = "jdbc:mysql://localhost:3306/restaurant";
+            String url = "jdbc:mysql://localhost:3306/hr_manage";
             String username = "root";
             String password = "";
             Class.forName("com.mysql.jdbc.Driver");
@@ -244,18 +242,17 @@ public class FoodDbUtil {
             myConn = DriverManager.getConnection(url,username,password);
 
             // create sql to delete student
-            String sql = "delete from food where id=?";
+            String sql = "delete from employee where id=?";
 
             // prepare statement
             myStmt = myConn.prepareStatement(sql);
 
             // set params
-            myStmt.setInt(1, foodId);
+            myStmt.setInt(1, empId);
 
             // execute sql statement
             myStmt.execute();
-        }
-        finally {
+        } finally {
             // clean up JDBC code
             close(myConn, myStmt, null);
         }

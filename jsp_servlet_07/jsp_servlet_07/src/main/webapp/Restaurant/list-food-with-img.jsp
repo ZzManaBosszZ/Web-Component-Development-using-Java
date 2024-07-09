@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Student Tracker App</title>
+    <title>Restran Tracker App</title>
     <link type="text/css" rel="stylesheet" href="css/style.css">
     <%-- <link type="text/css" rel="stylesheet" href="css/list.css"> --%>
 </head>
@@ -42,7 +42,9 @@
                 <tr>
                     <td>${tempFood.name}</td>
                     <td>${tempFood.categoryId}</td>
-                    <td>${tempFood.image}</td>
+                    <td>
+                        <img src="images/${tempFood.image}" alt="${tempFood.name}" width="100" height="100"/>
+                    </td>
                     <td>${tempFood.description}</td>
                     <td>${tempFood.quantity}</td>
                     <td>${tempFood.price}</td>

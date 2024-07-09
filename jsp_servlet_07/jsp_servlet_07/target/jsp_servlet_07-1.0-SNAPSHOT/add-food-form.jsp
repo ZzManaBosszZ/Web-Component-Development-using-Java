@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <title>Add Student</title>
-
+    <title>Add Food</title>
     <link type="text/css" rel="stylesheet" href="css/style.css">
     <link type="text/css" rel="stylesheet" href="css/add-student-style.css">
 </head>
-
 <body>
 <div id="wrapper">
     <div id="header">
@@ -17,48 +14,39 @@
 
 <div id="container">
     <h3>Add Food</h3>
-
-    <form action="FoodControllerServlet" method="GET">
-
+    <form method="POST" action="FoodControllerServlet" enctype="multipart/form-data">
         <input type="hidden" name="command" value="ADD" />
 
         <table>
             <tbody>
             <tr>
-                <td><label>Name:</label></td>
-                <td><input type="text" name="name" /></td>
+                <td><label for="name">Name:</label></td>
+                <td><input type="text" id="name" name="name" required /></td>
             </tr>
-
             <tr>
-                <td><label>Category:</label></td>
-                <td><input type="text" name="categoryId" /></td>
+                <td><label for="categoryId">Category:</label></td>
+                <td><input type="number" id="categoryId" name="categoryId" required /></td>
             </tr>
-
             <tr>
-                <td><label>Image:</label></td>
-                <td><input type="text" name="image" /></td>
+                <td><label for="image">Image:</label></td>
+                <td><input type="file" id="image" name="image" accept="image/*" required /></td>
             </tr>
-
             <tr>
-                <td><label>Description:</label></td>
-                <td><input type="text" name="description" /></td>
+                <td><label for="description">Description:</label></td>
+                <td><input type="text" id="description" name="description" required /></td>
             </tr>
-
             <tr>
-                <td><label>Quantity:</label></td>
-                <td><input type="text" name="quantity" /></td>
+                <td><label for="quantity">Quantity:</label></td>
+                <td><input type="number" id="quantity" name="quantity" required /></td>
             </tr>
-
             <tr>
-                <td><label>Price:</label></td>
-                <td><input type="text" name="price" /></td>
+                <td><label for="price">Price:</label></td>
+                <td><input type="number" step="0.01" id="price" name="price" required /></td>
             </tr>
-
             <tr>
-                <td><label></label></td>
+                <td></td>
                 <td><input type="submit" value="Save" class="save" /></td>
             </tr>
-
             </tbody>
         </table>
     </form>
@@ -70,16 +58,4 @@
     </p>
 </div>
 </body>
-
 </html>
-
-
-
-
-
-
-
-
-
-
-
